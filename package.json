@@ -10,18 +10,17 @@
   "engines": {
     "node": "~0.6.10"
   },
-  "bin": [ 
-    "bin/girror" 
-  ],
+  "bin": {
+    "girror": "bin/girror" 
+  },
   "dependencies": {
-    "gits": "0.1.7",
+    "gits": "0.1.8",
     "mkdirp": "0.3.0",
     "async": "0.1.18",
     "ctxobj": "0.2.0",
-    "commander": "0.5.2"
+    "commander": "0.5.2",
+    "logule": "0.6.1"
   },
-  "devDependencies": {
-    "logule": "*"
-  },
+  "devDependencies": {},
   "optionalDependencies": {}
 }
