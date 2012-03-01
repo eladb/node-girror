@@ -61,7 +61,7 @@ I will create a "girror-middleware" for express so you can just plug it in and h
 
 ## Credits ##
 
- * (@mojodna)[https://github.com/mojodna]
+ * [@mojodna](https://github.com/mojodna)
 
 ## License ##
 
