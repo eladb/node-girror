@@ -1,5 +1,7 @@
 # girror - Efficient mirrorring of git remotes #
 
+[![Build Status](https://secure.travis-ci.org/eladb/node-girror.png?branch=master)](http://travis-ci.org/eladb/node-girror)
+
 _girror_ maintains mirrors of git repositories on the local system using a bare repository cache.
 This makes it especially useful to handle post-commit triggers and automatically pull changes from a remote.
 
