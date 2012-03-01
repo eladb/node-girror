@@ -4,12 +4,25 @@ _girror_ maintains mirrors of git repositories on the local system using a bare 
 This makes it especially useful to handle post-commit triggers and automatically pull changes from a remote.
 
 ```bash
-$ npm install -g girror
+$ sudo npm install -g girror
 $ girror --remote git@github.com/eladb/node-girror --worktree /tmp/node-girror-master
 $ girror --remote git@github.com/eladb/node-girror --worktree /tmp/node-girror-branch1 --branch branch1
 ```
 
-## Command line tool ##
+Now, every time the remote changes, calling _girror_ again will update the worktree.
+
+_girror_ uses a bare repository with a `--mirror=fetch` origin to maintain a cached mirror of the remote.
+
+It essentially performs the following steps:
+
+ 1. Initializes a bare repo under `/tmp/girror-cache` (or `$TEMP/girror-cache` in Windows) based on the origin URL.
+ 2. Sets up a remote with `--mirror=fetch`.
+ 3. `git fetch origin`
+ 4. `export GIT_WORK_TREE=<worktree> && git checkout -f <branch>`
+
+_girror_ can be used as a command line tool or as a node.js in-process module.
+
+## Command line ##
 
 ```bash
 $ girror --help
@@ -45,6 +58,10 @@ girror was built to enable automatic deployment from source control:
  3. You can also use it to sync multiple branches into your production servers and use them as staging environments (yeah!).
 
 I will create a "girror-middleware" for express so you can just plug it in and have all this automated.
+
+## Credits ##
+
+ * (@mojodna)[https://github.com/mojodna]
 
 ## License ##
 
