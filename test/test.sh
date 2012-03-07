@@ -4,3 +4,4 @@ REMOTE=file://localhost$PWD/bare
 find /tmp/girror-test-work-1 || exit 1
 ../bin/girror --remote $REMOTE --worktree /tmp/girror-test-work-2 --verbose --branch branch1 || exit 1
 find /tmp/girror-test-work-2 || exit 1
+echo "All tests passed"
