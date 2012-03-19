@@ -1,6 +1,5 @@
 #!/bin/bash
-[ "x$TEMPx" == "xx" ] && TEMP=/tmp
-echo "Temp dir: $TEMP"
+TEMP=/tmp
 REMOTE=file://localhost$PWD/bare
 ../bin/girror --remote $REMOTE --worktree $TEMP/girror-test-work-1 --verbose || exit 1
 find $TEMP/girror-test-work-1 || exit 1
