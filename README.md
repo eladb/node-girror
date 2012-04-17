@@ -7,8 +7,8 @@ This makes it especially useful to handle post-commit triggers and automatically
 
 ```bash
 $ sudo npm install -g girror
-$ girror --remote git@github.com/eladb/node-girror --worktree /tmp/node-girror-master
-$ girror --remote git@github.com/eladb/node-girror --worktree /tmp/node-girror-branch1 --branch branch1
+$ girror git@github.com/eladb/node-girror /tmp/node-girror-master
+$ girror git@github.com/eladb/node-girror#branch1 /tmp/node-girror-branch1
 ```
 
 Now, every time the remote changes, calling _girror_ again will update the worktree.
@@ -29,27 +29,42 @@ _girror_ can be used as a command line tool or as a node.js in-process module.
 ```bash
 $ girror --help
 
-  Usage: girror [options]
+  Usage: girror [options] remote-url[#branch] work-tree
 
   Options:
 
     -h, --help             output usage information
-    -r, --remote <url>     git remote url (required)
-    -w, --worktree <path>  path to worktree (required)
-    -b, --branch <branch>  branch to mirror (default: master)
     -v, --verbose          verbose output
 
 ```
+
+If `#branch` is not provided in the URL, `#master` is the default.
 
 ## API ##
 
 ### girror(remote, worktree, options, callback) ###
 
- * `remote` - the URL of the git remote
+ * `remote` - the URL of the git remote (postfix with '#branch' to checkout a specific branch)
  * `worktree` - path to local working directory (where you want files to be checked out into)
- * `options.branch` - branch to checkout (default is `master`)
  * `options.cachedir` - where to store the bare repo cache that makes girror so awesome (default is $GIRROR_CACHE || ($TMP || $TEMP || /tmp)/girror-cache)
  * `options.logger` - optional alternative to `console`.
+ * `options.remote_type` - A mapper for the remote URL (`function(remote_url) => remote_url`).
+   You can either provide your own function, or use one of the built in ones:
+   * `girror.remote_types.no_auth()` - passthru (the default)
+   * `girror.remote_types.auth(user, password)` - add `user:password@` to URL.
+   * `girror.remote_types.github_ssh()` - convert a github (e.g. https://github.com/account/repo) URL to an 
+     SSH URL (e.g. `git@github.com/account/repo.git`)
+
+### girror.git(args, options, callback) ###
+
+Invokes `git`. Returns a `ChildProcess` object that can be used to grab stdio or whatever.
+
+ * `args` array of arguments to pass to `git`.
+ * `options.env` environment hash (default is `process.env`)
+ * `options.logger` optional logger (default is `console`)
+ * `options.tolerate` never fail (default `false`)
+ * `options.verbose` verbose output (default `true`)
+ * `callback` is `function(err)`
 
 ## Using girror for continuous deployment ##
 

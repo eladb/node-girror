@@ -4,31 +4,30 @@ var logule = require('logule');
 var girror = require('..');
 
 program
-  .option('-r, --remote <url>', 'git remote url (required)')
-  .option('-w, --worktree <path>', 'path to worktree (required)')
-  .option('-b, --branch <branch>', 'branch to mirror (default: master)', 'master')
+  .usage('[options] remote-url[#branch] work-tree')
   .option('-v, --verbose', 'verbose output')
+  .option('-r, --remote <url>', '[deprecated] git remote url')
+  .option('-w, --worktree <path>', '[deprecated] path to worktree')
+  .option('-b, --branch <branch>', '[deprecated] branch to mirror')
   .parse(process.argv);
 
-if (!program.remote) {
-  throw new Error('--remote is required');
+var remote = program.args[0] || program.remote;
+var worktree = program.args[1] || program.worktree;
+if (program.branch) remote = remote + '#' + program.branch;
+
+if (!remote) {
+  throw new Error('remote url is required');
 }
 
-if (!program.worktree) {
-  throw new Error('--worktree is required');
+if (!worktree) {
+  throw new Error('worktree is required');
 }
 
 if (!program.verbose) {
   logule.suppress('trace');
 }
 
-var options = {
-  logger: logule,
-  branch: program.branch,
-};
-
-return girror(program.remote, program.worktree, options, function(err) {
+return girror(remote, worktree, { logger: logule }, function(err) {
   if (err) logule.error(err);
   else logule.info('done');
 });
-
