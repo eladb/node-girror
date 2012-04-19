@@ -6,6 +6,7 @@ var girror = require('..');
 program
   .usage('[options] remote-url[#branch] work-tree')
   .option('-v, --verbose', 'verbose output')
+  .option('--no-girror-file', 'Do not create .girror.json file in worktree')
   .option('-r, --remote <url>', '[deprecated] git remote url')
   .option('-w, --worktree <path>', '[deprecated] path to worktree')
   .option('-b, --branch <branch>', '[deprecated] branch to mirror')
@@ -27,7 +28,15 @@ if (!program.verbose) {
   logule.suppress('trace');
 }
 
-return girror(remote, worktree, { logger: logule }, function(err) {
+var opts = {
+  logger: logule
+};
+
+if (!program.girrorFile) {
+  opts.girrorfile = false;
+}
+
+return girror(remote, worktree, opts, function(err) {
   if (err) logule.error(err);
   else logule.info('done');
 });

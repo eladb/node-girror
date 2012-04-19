@@ -54,6 +54,7 @@ If `#branch` is not provided in the URL, `#master` is the default.
    * `girror.remote_types.auth(user, password)` - add `user:password@` to URL.
    * `girror.remote_types.github_ssh()` - convert a github (e.g. https://github.com/account/repo) URL to an 
      SSH URL (e.g. `git@github.com/account/repo.git`)
+ * `options.girrorfile` - The name of the girror file to create under the worktree (contains some metadata on the last girror operation). Set to `false` to disable. Default is `.girror.json`.
 
 ### girror.git(args, options, callback) ###
 
