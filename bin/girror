@@ -20,8 +20,9 @@ var usageString = usages.reduce(function(result, item, i) {
 program
   .usage(usageString)
   .option('-v, --verbose', 'verbose output')
-  .option('--no-girror-file', 'Do not create .girror.json file in worktree')
-  .option('--find-remote', 'Output the remote URL of the specified <worktree>, if a girror file can be found')
+  .option('--no-shallow', 'create a non-shallow clone (default is to pass --depth=1 to git fetch)')
+  .option('--no-girror-file', 'do not create .girror.json file in worktree')
+  .option('--find-remote', 'output the remote URL of the specified <worktree>, if a girror file can be found')
   .option('-r, --remote <url>', '[deprecated] git remote url')
   .option('-w, --worktree <path>', '[deprecated] path to worktree')
   .option('-b, --branch <branch>', '[deprecated] branch to mirror')
@@ -57,8 +58,12 @@ if (program.remote) remote = program.remote;
 if (program.branch) remote += '#' + program.branch;
 
 var opts = {
-  logger: logule
+  logger: logule,
 };
+
+if (!program.shallow) {
+  opts.depth = -1;
+}
 
 if (!program.verbose) {
   logule.suppress('trace');
