@@ -29,22 +29,27 @@ _girror_ can be used as a command line tool or as a node.js in-process module.
 ```bash
 $ girror --help
 
-  Usage: girror [options] remote-url[#branch] work-tree
+  Usage: girror                             - resync current directory (read <remote-url> and <branch> from .girror.json)
+         girror work-tree                   - resync <worktree> (read <remote-url> and <branch> from .girror.json)
+         girror remote-url worktree         - sync/resync <remote-url> into <worktree> and checkout "master"
+         girror remote-url#branch worktree  - sync/resync <remote-url> into <worktree> and checkout <branch>
 
   Options:
-
     -h, --help             output usage information
     -v, --verbose          verbose output
+    --no-girror-file       Do not create .girror.json file in worktree
+    -r, --remote <url>     [deprecated] git remote url
+    -w, --worktree <path>  [deprecated] path to worktree
+    -b, --branch <branch>  [deprecated] branch to mirror
 
 ```
-
-If `#branch` is not provided in the URL, `#master` is the default.
 
 ## API ##
 
 ### girror(remote, worktree, options, callback) ###
 
- * `remote` - the URL of the git remote (postfix with '#branch' to checkout a specific branch)
+ * `remote` - the URL of the git remote (postfix with '#branch' to checkout a specific branch). 
+    If `remote` is `null`, `girror` will look for a `.girror.json` file up the file system and will induce remote#branch from there.
  * `worktree` - path to local working directory (where you want files to be checked out into)
  * `options.cachedir` - where to store the bare repo cache that makes girror so awesome (default is $GIRROR_CACHE || ($TMP || $TEMP || /tmp)/girror-cache)
  * `options.logger` - optional alternative to `console`.
@@ -66,6 +71,11 @@ Invokes `git`. Returns a `ChildProcess` object that can be used to grab stdio or
  * `options.tolerate` never fail (default `false`)
  * `options.verbose` verbose output (default `true`)
  * `callback` is `function(err)`
+
+### girror.find_meta(dir, options, callback) ###
+
+This function will look for a girror file under `dir` and any of it's parents. It will parse the first one it finds and return it via the callback function (`function(err, meta)`). If the girror file could not be found, `meta` will be `null`.
+`options.girrorfile` may contain a different name for the girror file and `options` is optional.
 
 ## Using girror for continuous deployment ##
 

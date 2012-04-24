@@ -53,6 +53,28 @@ var tests = {
       });
     });
   },
+
+  // run without `remote` and expect that girror will induce it from the .girror file.
+  test_no_remote: function(cb) {
+    return girror(remote, workdir2, function(err) {
+      assert(!err);
+      return girror(null, workdir2, function(err) {
+        assert(!err, err);
+        return cb();
+      });
+    });
+  },
+
+  // run without `remote`, but from outside the repo. this should fail
+  test_no_remote_outside: function(cb) {
+    return girror(remote, workdir2, function(err) {
+      assert(!err);
+      return girror(null, path.join(workdir2, '..'), function(err) {
+        assert(err);
+        return cb();
+      });
+    });
+  },
 }
 
 return async.forEachSeries(

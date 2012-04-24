@@ -1,42 +1,85 @@
 #!/usr/bin/env node
 var program = require('commander');
 var logule = require('logule');
+var path = require('path');
 var girror = require('..');
 
+var usages = [
+  '                            - resync current directory (read <remote-url> and <branch> from .girror.json)',
+  'work-tree                   - resync <worktree> (read <remote-url> and <branch> from .girror.json)',
+  'remote-url worktree         - sync/resync <remote-url> into <worktree> and checkout "master"',
+  'remote-url#branch worktree  - sync/resync <remote-url> into <worktree> and checkout <branch>',
+];
+
+var usageString = usages.reduce(function(result, item, i) {
+  if (i > 0) result += '\n         ' + path.basename(process.argv[1]) + ' ';
+  result += item;
+  return result;
+});
+
 program
-  .usage('[options] remote-url[#branch] work-tree')
+  .usage(usageString)
   .option('-v, --verbose', 'verbose output')
   .option('--no-girror-file', 'Do not create .girror.json file in worktree')
+  .option('--find-remote', 'Output the remote URL of the specified <worktree>, if a girror file can be found')
   .option('-r, --remote <url>', '[deprecated] git remote url')
   .option('-w, --worktree <path>', '[deprecated] path to worktree')
   .option('-b, --branch <branch>', '[deprecated] branch to mirror')
   .parse(process.argv);
 
-var remote = program.args[0] || program.remote;
-var worktree = program.args[1] || program.worktree;
-if (program.branch) remote = remote + '#' + program.branch;
+// determione remote and worktree. if remote is null, girror will look up the metadata
+// in the .girror.json file up the filesystem.
 
-if (!remote) {
-  throw new Error('remote url is required');
+var remote = null;
+var worktree = null;
+
+switch (program.args.length) {
+  case 0:
+    worktree = process.cwd();
+    break;
+
+  case 1:
+    worktree = program.args[0];
+    break;
+
+  case 2:
+    remote = program.args[0];
+    worktree = program.args[1];
+    break;
+
+  default:
+    throw new Error('invalid usage');
 }
 
-if (!worktree) {
-  throw new Error('worktree is required');
-}
-
-if (!program.verbose) {
-  logule.suppress('trace');
-}
+// deprecated options
+if (program.worktree) worktree = program.worktree;
+if (program.remote) remote = program.remote;
+if (program.branch) remote += '#' + program.branch;
 
 var opts = {
   logger: logule
 };
 
+if (!program.verbose) {
+  logule.suppress('trace');
+}
+
 if (!program.girrorFile) {
   opts.girrorfile = false;
 }
 
+// --find-remote
+if (program.findRemote) {
+  return girror.find_meta(worktree, function(err, meta) {
+    if (!err && !meta) err = new Error('can\'t find ".girror.json" under "' + worktree + '" or any of its parent directories');
+    if (err) throw err;
+    process.stdout.write(meta.remote + '#' + meta.branch);
+    process.stdout.write('\n');
+    return;
+  });
+}
+
 return girror(remote, worktree, opts, function(err) {
-  if (err) logule.error(err);
-  else logule.info('done');
+  if (err) throw err;
+  else logule.trace('done');
 });
