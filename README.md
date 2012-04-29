@@ -38,7 +38,7 @@ $ girror --help
 
     -h, --help             output usage information
     -v, --verbose          verbose output
-    --no-shallow           create a non-shallow clone (default is to pass --depth=1 to git fetch)
+    --shallow              create a shallow clone (--depth=1)
     --no-girror-file       do not create .girror.json file in worktree
     --find-remote          output the remote URL of the specified <worktree>, if a girror file can be found
     -r, --remote <url>     [deprecated] git remote url
@@ -46,8 +46,6 @@ $ girror --help
     -b, --branch <branch>  [deprecated] branch to mirror
 
 ```
-
-By default, girror will create a shallow clone of the repository (--depth=1). If you want an infinite clone, use --no-shallow.
 
 ## API ##
 
@@ -65,7 +63,7 @@ By default, girror will create a shallow clone of the repository (--depth=1). If
    * `girror.remote_types.github_ssh()` - convert a github (e.g. https://github.com/account/repo) URL to an 
      SSH URL (e.g. `git@github.com/account/repo.git`)
  * `options.girrorfile` - The name of the girror file to create under the worktree (contains some metadata on the last girror operation). Set to `false` to disable. Default is `.girror.json`.
- * `options.depth`: defines the clone depth (-1 indicates infinite). Default is 1.
+ * `options.depth`: defines the clone depth (-1 indicates infinite). Default is -1.
 
 ### girror.git(args, options, callback) ###
 

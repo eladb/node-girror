@@ -18,8 +18,8 @@ echo "test: girror <remote>#<branch> <worktree>"
 ../bin/girror $REMOTE#branch1 $TEMP/girror-test-work-3 || exit 1
 
 echo
-echo "test: girror <remote>#<branch> <worktree> --no-shallow"
-../bin/girror $REMOTE#branch1 $TEMP/girror-test-work-3 --no-shallow --verbose || exit 1
+echo "test: girror <remote>#<branch> <worktree> --shallow"
+../bin/girror $REMOTE#branch1 $TEMP/girror-test-work-3 --shallow --verbose || exit 1
 
 
 echo
