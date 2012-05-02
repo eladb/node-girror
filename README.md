@@ -17,10 +17,16 @@ _girror_ uses a bare repository with a `--mirror=fetch` origin to maintain a cac
 
 It essentially performs the following steps:
 
- 1. Initializes a bare repo under `/tmp/girror-cache` (or `$TEMP/girror-cache` in Windows) based on the origin URL.
- 2. `git remote add --mirror=fetch <remote>` (tolerate failures)
- 3. `git fetch origin`
- 4. `git --work-tree <worktree> checkout -f <branch>`
+```
+git init --bare # idempotent
+git remote add --mirror=fetch <remote> # tolerate failures
+git fetch origin
+git --work-tree <worktree> checkout -f <branch>
+```
+
+The bare repository will be created in a directory under `/tmp/girror-cache` (or `$TEMP/girror-cache` in Windows).
+The name of the directory is based on the remote URL (mangled).
+If `GIRROR_CACHE` environment variable is defined, it will be used as the cache root.
 
 _girror_ can be used as a command line tool or as a node.js in-process module.
 
