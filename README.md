@@ -24,6 +24,11 @@ It essentially performs the following steps:
 
 _girror_ can be used as a command line tool or as a node.js in-process module.
 
+Since git supports concurrency both for `fetch` and `checkout`, girror is also safe. Multiple girror operations may run in parallel.
+However, this might not be very efficient since the initial fetch operation may take a long time and running multiple fetch operations against the same repository
+will be wasty. If you have multiple girror operations that you wish to run against the same repository (e.g. checkout different branches/tags to various working
+trees), you might want to do a single girror operation first that will perform the initial fetch and then run all the rest concurrently.
+
 ## Command line ##
 
 ```bash
