@@ -64,6 +64,7 @@ opts.depth = program.shallow ? 1 : -1;
 
 if (!program.verbose) {
   logule.suppress('trace');
+  logule.suppress('info');
 }
 
 if (!program.girrorFile) {
