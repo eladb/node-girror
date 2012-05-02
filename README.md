@@ -46,9 +46,6 @@ $ girror --help
     --shallow              create a shallow clone (--depth=1)
     --no-girror-file       do not create .girror.json file in worktree
     --find-remote          output the remote URL of the specified <worktree>, if a girror file can be found
-    -r, --remote <url>     [deprecated] git remote url
-    -w, --worktree <path>  [deprecated] path to worktree
-    -b, --branch <branch>  [deprecated] branch to mirror
 
 ```
 
