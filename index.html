@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Node-girror by eladb</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Node-girror</h1>
+        <p>Efficient mirroring of git remotes</p>
+        <p class="view"><a href="https://github.com/eladb/node-girror">View the Project on GitHub <small>eladb/node-girror</small></a></p>
+        <ul>
+          <li><a href="https://github.com/eladb/node-girror/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/eladb/node-girror/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/eladb/node-girror">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>girror - Efficient mirroring of git remotes</h1>
+
+<p><a href="http://travis-ci.org/eladb/node-girror"><img src="https://secure.travis-ci.org/eladb/node-girror.png?branch=master" alt="Build Status"></a></p>
+
+<p><em>girror</em> maintains mirrors of git repositories on the local system using a bare repository cache.
+This makes it especially useful to handle post-commit triggers and automatically pull changes from a remote.</p>
+
+<div class="highlight">
+<pre><span class="nv">$ </span>sudo npm install -g girror
+<span class="nv">$ </span>girror git@github.com/eladb/node-girror /tmp/node-girror-master
+<span class="nv">$ </span>girror git@github.com/eladb/node-girror#branch1 /tmp/node-girror-branch1
+</pre>
+</div>
+
+
+<p>Now, every time the remote changes, calling <em>girror</em> again will update the worktree.</p>
+
+<p><em>girror</em> uses a bare repository with a <code>--mirror=fetch</code> origin to maintain a cached mirror of the remote.</p>
+
+<p>It essentially performs the following steps:</p>
+
+<pre><code>git init --bare # idempotent
+git remote add --mirror=fetch &lt;remote&gt; # tolerate failures
+git fetch origin
+git --work-tree &lt;worktree&gt; checkout -f &lt;branch&gt;
+</code></pre>
+
+<p>The bare repository will be created in a directory under <code>/tmp/girror-cache</code> (or <code>$TEMP/girror-cache</code> in Windows).
+The name of the directory is based on the remote URL (mangled).
+If <code>GIRROR_CACHE</code> environment variable is defined, it will be used as the cache root.</p>
+
+<p><em>girror</em> can be used as a command line tool or as a node.js in-process module.</p>
+
+<p>Since git supports concurrency both for <code>fetch</code> and <code>checkout</code>, girror is also safe. Multiple girror operations may run in parallel.
+However, this might not be very efficient since the initial fetch operation may take a long time and running multiple fetch operations against the same repository
+will be wasty. If you have multiple girror operations that you wish to run against the same repository (e.g. checkout different branches/tags to various working
+trees), you might want to do a single girror operation first that will perform the initial fetch and then run all the rest concurrently.</p>
+
+<h2>Command line</h2>
+
+<div class="highlight">
+<pre><span class="nv">$ </span>girror --help
+
+  Usage: girror                             - resync current directory <span class="o">(</span><span class="nb">read</span> &lt;remote-url&gt; and &lt;branch&gt; from .girror.json<span class="o">)</span>
+         girror work-tree                   - resync &lt;worktree&gt; <span class="o">(</span><span class="nb">read</span> &lt;remote-url&gt; and &lt;branch&gt; from .girror.json<span class="o">)</span>
+         girror remote-url worktree         - sync/resync &lt;remote-url&gt; into &lt;worktree&gt; and checkout <span class="s2">"master"</span>
+         girror remote-url#branch worktree  - sync/resync &lt;remote-url&gt; into &lt;worktree&gt; and checkout &lt;branch&gt;
+
+  Options:
+
+    -h, --help             output usage information
+    -v, --verbose          verbose output
+    --shallow              create a shallow clone <span class="o">(</span>--depth<span class="o">=</span>1<span class="o">)</span>
+    --no-girror-file       <span class="k">do </span>not create .girror.json file in worktree
+    --find-remote          output the remote URL of the specified &lt;worktree&gt;, <span class="k">if </span>a girror file can be found
+
+</pre>
+</div>
+
+
+<h2>API</h2>
+
+<h3>girror(remote, worktree, options, callback)</h3>
+
+<ul>
+<li>
+<code>remote</code> - the URL of the git remote (postfix with '#branch' to checkout a specific branch). 
+If <code>remote</code> is <code>null</code>, <code>girror</code> will look for a <code>.girror.json</code> file up the file system and will induce remote#branch from there.</li>
+<li>
+<code>worktree</code> - path to local working directory (where you want files to be checked out into)</li>
+<li>
+<code>options.cachedir</code> - where to store the bare repo cache that makes girror so awesome (default is $GIRROR_CACHE || ($TMP || $TEMP || /tmp)/girror-cache)</li>
+<li>
+<code>options.logger</code> - optional alternative to <code>console</code>.</li>
+<li>
+<code>options.remote_type</code> - A mapper for the remote URL (<code>function(remote_url) =&gt; remote_url</code>).
+You can either provide your own function, or use one of the built in ones:
+
+<ul>
+<li>
+<code>girror.remote_types.no_auth()</code> - passthru (the default)</li>
+<li>
+<code>girror.remote_types.auth(user, password)</code> - add <code>user:password@</code> to URL.</li>
+<li>
+<code>girror.remote_types.github_ssh()</code> - convert a github (e.g. <a href="https://github.com/account/repo">https://github.com/account/repo</a>) URL to an 
+SSH URL (e.g. <code>git@github.com/account/repo.git</code>)</li>
+</ul>
+</li>
+<li>
+<code>options.girrorfile</code> - The name of the girror file to create under the worktree (contains some metadata on the last girror operation). Set to <code>false</code> to disable. Default is <code>.girror.json</code>.</li>
+<li>
+<code>options.depth</code>: defines the clone depth (-1 indicates infinite). Default is -1.</li>
+</ul><h3>girror.git(args, options, callback)</h3>
+
+<p>Invokes <code>git</code>. Returns a <code>ChildProcess</code> object that can be used to grab stdio or whatever.</p>
+
+<ul>
+<li>
+<code>args</code> array of arguments to pass to <code>git</code>.</li>
+<li>
+<code>options.env</code> environment hash (default is <code>process.env</code>)</li>
+<li>
+<code>options.logger</code> optional logger (default is <code>console</code>)</li>
+<li>
+<code>options.tolerate</code> never fail (default <code>false</code>)</li>
+<li>
+<code>options.verbose</code> verbose output (default <code>true</code>)</li>
+<li>
+<code>callback</code> is <code>function(err)</code>
+</li>
+</ul><h3>girror.find_meta(dir, options, callback)</h3>
+
+<p>This function will look for a girror file under <code>dir</code> and any of it's parents. It will parse the first one it finds and return it via the callback function (<code>function(err, meta)</code>). If the girror file could not be found, <code>meta</code> will be <code>null</code>.
+<code>options.girrorfile</code> may contain a different name for the girror file and <code>options</code> is optional.</p>
+
+<h2>Using girror for continuous deployment</h2>
+
+<p>girror was built to enable automatic deployment from source control:</p>
+
+<ol>
+<li>Set up a post-commit HTTP trigger on your favorite source control that will POST into some endpoint on your servers.</li>
+<li>Invoke <em>girror</em> to sync from the remote repository into the local filesystem. <em>girror</em> will do it as efficiently and painlessly as possible (no merges, no cleanups, only clean diffs).</li>
+<li>You can also use it to sync multiple branches into your production servers and use them as staging environments (yeah!).</li>
+</ol><p>I will create a "girror-middleware" for express so you can just plug it in and have all this automated.</p>
+
+<h2>Credits</h2>
+
+<ul>
+<li><a href="https://github.com/mojodna">@mojodna</a></li>
+</ul><h2>License</h2>
+
+<p>MIT</p>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/eladb">eladb</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+    
+  </body>
+</html>
