@@ -62,9 +62,8 @@ var opts = {};
 opts.logger = logule;
 opts.depth = program.shallow ? 1 : -1;
 
-if (!program.verbose) {
-  logule.suppress('trace');
-  logule.suppress('info');
+if (program.verbose) {
+  opts.verbose = true;
 }
 
 if (!program.girrorFile) {

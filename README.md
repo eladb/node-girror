@@ -72,6 +72,7 @@ $ girror --help
      SSH URL (e.g. `git@github.com/account/repo.git`)
  * `options.girrorfile` - The name of the girror file to create under the worktree (contains some metadata on the last girror operation). Set to `false` to disable. Default is `.girror.json`.
  * `options.depth`: defines the clone depth (-1 indicates infinite). Default is -1.
+ * `options.verbose`: outputs git & girror verbose into logger. Default is `false`.
 
 ### girror.git(args, options, callback) ###
 
