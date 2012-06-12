@@ -1,6 +1,7 @@
 #!/bin/bash
 TEMP=/tmp
 REMOTE=file://localhost$PWD/bare
+export GIRROR_CACHE=$TEMP/girror-test-cache
 
 # run a few command line tests
 echo
@@ -36,6 +37,12 @@ echo
 echo "test: girror --find-remote <worktree>"
 FOUND_REMOTE=`../bin/girror --find-remote $TEMP/girror-test-work-3`;
 [ "xx${FOUND_REMOTE}xx" == "xx${REMOTE}#branch1xx" ] || exit 1
+
+echo
+echo "test: girror on a corrupted repository"
+../bin/girror $REMOTE $TEMP/girror-test-corrupted || exit 1
+echo '[corruptme!!XXX>>>' >> $GIRROR_CACHE/*/config
+../bin/girror $REMOTE $TEMP/girror-test-corrupted || exit 1
 
 # run node.js tests
 node $PWD/test.js || exit 1
