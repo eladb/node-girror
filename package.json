@@ -2,14 +2,14 @@
   "author": "Elad Ben-Israel <elad.benisrael@gmail.com>",
   "name": "girror",
   "description": "Efficient mirror of git repositories. Great for continuous deployment",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "repository": {
     "type": "git",
     "url": "https://github.com/eladb/node-girror"
   },
   "main": "main",
   "engines": {
-    "node": "~0.8.2"
+    "node": ">= 0.8.0"
   },
   "bin": {
     "girror": "bin/girror" 
