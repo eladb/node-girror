@@ -5,7 +5,7 @@ var async = require('async');
 
 var girror = require('..');
 
-var remote = 'file://localhost/' + path.join(__dirname, 'bare').replace(/\\/g, '/')
+var remote = 'file://localhost/' + path.join(__dirname, 'bare').replace(/\\/g, '/');
 
 var workdir = path.join('/tmp', Math.round(Math.random() * 100000).toString());
 var workdir2 = path.join('/tmp', Math.round(Math.random() * 100000).toString());
