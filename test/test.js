@@ -77,7 +77,7 @@ var tests = {
   },
 
   test_timeout: function(cb) {
-    return girror(remote, workdir, {timeout: 10}, function(err) {
+    return girror(remote, workdir, {timeout: 1}, function(err) {
       assert(err);
       assert(err.exitCode);
       assert.equal(err.exitCode, 'killed');
