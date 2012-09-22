@@ -5,7 +5,7 @@ var async = require('async');
 
 var girror = require('..');
 
-var remote = 'file://localhost' + __dirname + '/bare';
+var remote = 'file://localhost/' + path.join(__dirname, 'bare').replace(/\\/g, '/');
 
 var workdir = path.join('/tmp', Math.round(Math.random() * 100000).toString());
 var workdir2 = path.join('/tmp', Math.round(Math.random() * 100000).toString());
@@ -75,6 +75,23 @@ var tests = {
       });
     });
   },
+
+  test_timeout: function(cb) {
+    return girror(remote, workdir, {timeout: 1}, function(err) {
+      assert(err);
+      assert(err.exitCode);
+      assert.equal(err.exitCode, 'killed');
+      return cb();
+    });
+  },
+
+  test_skip_checkout: function(cb) {
+    return girror(remote, workdir, {skipExistingWorkTrees: true}, function(err) {
+      // At least not crashes while using this code path
+      assert(!err);
+      return cb();
+    });
+  }
 }
 
 return async.forEachSeries(
