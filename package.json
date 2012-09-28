@@ -17,7 +17,7 @@
   "dependencies": {
     "mkdirp": "0.3.x",
     "async": "0.1.x",
-    "ctxobj": "0.3.x",
+    "ctxobj": "0.2.x",
     "commander": "0.5.x",
     "logule": "0.6.x",
     "rimraf": "2.0.x"
