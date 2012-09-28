@@ -12,7 +12,7 @@
     "node": "0.8.x"
   },
   "bin": {
-    "girror": "bin/girror" 
+    "girror": "bin/girror"
   },
   "dependencies": {
     "mkdirp": "0.3.x",
