@@ -3,6 +3,7 @@
   "name": "girror",
   "description": "Efficient mirror of git repositories. Great for continuous deployment",
   "version": "0.2.11",
+  "contributors": [ "Yosef Dinerstein <yosefd@microsoft.com>" ],
   "repository": {
     "type": "git",
     "url": "https://github.com/eladb/node-girror"
