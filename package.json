@@ -2,7 +2,7 @@
   "author": "Elad Ben-Israel <elad.benisrael@gmail.com>",
   "name": "girror",
   "description": "Efficient mirror of git repositories. Great for continuous deployment",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "contributors": [ "Yosef Dinerstein <yosefd@microsoft.com>" ],
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
   "dependencies": {
     "mkdirp": "0.3.x",
     "async": "0.1.x",
-    "ctxobj": "0.2.x",
+    "ctxobj": "0.3.x",
     "commander": "0.5.x",
     "logule": "0.6.x",
     "rimraf": "2.0.x"
